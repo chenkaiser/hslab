@@ -1,0 +1,21 @@
+<div class="clr-row">
+    <div class="card clr-col-3" *ngFor='let card of model'>
+            <div class="card-header">
+                {{card.Name}}
+            </div>
+            <div class="card-img">
+                <img [src]="card.Image" class="card-media-image">
+            </div>
+            <div class="card-block">
+                <div class="card-title">
+                    {{card.SetName}}
+                </div>
+                <div class="card-text">
+                    {{card.Text}}
+                </div>
+            </div>
+            <div class="card-footer">
+                {{card.Type}}
+            </div>
+    </div>
+</div>

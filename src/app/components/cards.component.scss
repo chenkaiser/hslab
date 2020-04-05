@@ -1,0 +1,15 @@
+.cards-viewport {
+    height: 75vh;
+    width: 100%;
+    border: 1px solid black;
+    .cdk-virtual-scroll-content-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+}
+.spinner{
+    position: absolute;
+    top: 50%;
+    left:50%;
+}
