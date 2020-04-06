@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import { CardDataSource } from '../datasource/card.datasource';
 import { CardService } from '../services/card.service';
 import { Subscription } from 'rxjs';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
  selector: 'app-cards',
@@ -16,23 +17,26 @@ export class CardsComponent implements OnInit, OnDestroy {
     public cardItemSize = 500;
     public pageSize = 20;
     public rowSize = 4;
+    @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
     constructor(private cardService: CardService) {
-      this.cardsDataSource = new CardDataSource(cardService, this.pageSize, this.rowSize);
+      this.cardsDataSource = new CardDataSource(this.cardService, this.pageSize, this.rowSize);
       this.subscriptions.push(this.cardsDataSource.onDataLoaded.subscribe(() => {this.showProgress = false; }));
       this.subscriptions.push(this.cardsDataSource.onDataLoading.subscribe(() => {this.showProgress = true; }));
     }
 
-    ngOnDestroy(): void {
+    public ngOnDestroy(): void {
         for (const s of this.subscriptions) {
             s.unsubscribe();
         }
         this.subscriptions = [];
     }
-    ngOnInit(): void {
-        this.cardsDataSource.preLoad();
+    public ngOnInit(): void {
+        this.cardsDataSource.search();
     }
 
-    public searchCards() { 
-        this.cardsDataSource.search(this.searchText);
+    public searchCards() {
+        this.virtualScroll.scrollToIndex(0);
+        this.cardsDataSource.term = this.searchText;
+        this.cardsDataSource.search();
     }
 }

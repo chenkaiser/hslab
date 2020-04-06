@@ -9,5 +9,4 @@ import { ICard } from '../models/ICard';
 export class CardItemComponent {
     @Input()
     public model: ICard[];
-
 }

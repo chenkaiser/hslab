@@ -14,33 +14,21 @@ export class CardDataSource extends DataSource<IRow | undefined> {
     public onDataLoading: EventEmitter<any> = new EventEmitter();
     public onDataLoaded: EventEmitter<any> = new EventEmitter();
     public rowSize = 0;
+    public term: string;
     constructor(private cardService: CardService, pgSize: number, rwSize: number) {
         super();
         this.pageSize = pgSize;
         this.rowSize = rwSize;
     }
 
-    public preLoad() {
-        this.onDataLoading.emit({});
-        this.cardService.getCards(this.pageSize, this.lastPage, this.rowSize).subscribe( (res) => {
-            this.cachedCards = res;
-            this.dataStream.next(this.cachedCards);
-            this.onDataLoaded.emit({});
-        });
-    }
-
-    public search(term: string) {
-        this.onDataLoading.emit({});
-        this.cardService.searchCards(term, this.pageSize, this.lastPage, this.rowSize).subscribe( (res) => {
-            this.cachedCards = res;
-            this.dataStream.next(this.cachedCards);
-            this.onDataLoaded.emit({});
-        });
+    public search() {
+       this.lastPage = 0;
+       this.cachedCards = [];
+       this.fetchNewPage();
     }
 
     public connect(collectionViewer: CollectionViewer): Observable<(IRow | undefined)[] | ReadonlyArray<IRow | undefined>> {
         this.subscription.add(collectionViewer.viewChange.subscribe(range => {
-
             const currentPage = Math.floor(range.end / (this.pageSize / this.rowSize));
             if (currentPage > this.lastPage) {
                 this.lastPage = currentPage;
@@ -56,7 +44,7 @@ export class CardDataSource extends DataSource<IRow | undefined> {
     }
 
     private fetchNewPage(): void {
-            this.cardService.getCards(this.pageSize, this.lastPage, this.rowSize).subscribe(res => {
+            this.cardService.searchCards(this.term, this.pageSize, this.lastPage, this.rowSize).subscribe(res => {
                 this.cachedCards = this.cachedCards.concat(res);
                 this.dataStream.next(this.cachedCards);
                 this.onDataLoaded.emit({});
