@@ -32,7 +32,6 @@ export class CardDataSource extends DataSource<IRow | undefined> {
             const currentPage = Math.floor(range.end / (this.pageSize / this.rowSize));
             if (currentPage > this.lastPage) {
                 this.lastPage = currentPage;
-                this.onDataLoading.emit({});
                 this.fetchNewPage();
             }
         }));
@@ -44,6 +43,7 @@ export class CardDataSource extends DataSource<IRow | undefined> {
     }
 
     private fetchNewPage(): void {
+            this.onDataLoading.emit({});
             this.cardService.searchCards(this.term, this.pageSize, this.lastPage, this.rowSize).subscribe(res => {
                 this.cachedCards = this.cachedCards.concat(res);
                 this.dataStream.next(this.cachedCards);
